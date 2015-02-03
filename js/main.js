@@ -7,9 +7,8 @@ window.onload = function() {
     function preload() {
         // load sprites and backgrounds
         game.load.image('sky', 'assets/sky.bmp');
-        game.load.spritesheet( 'ninja', 'assets/ninja.png', 536, 522);
+        game.load.spritesheet( 'ninja', 'assets/ninja.png', 386, 467);
         game.load.image('map', 'assets/map.bmp');
-        game.load.image('dog', 'assets/dog.png');
     }
     // create variables
     var bg;
@@ -18,42 +17,20 @@ window.onload = function() {
     var jump;
     var jumpTimer = 0;
     var facingLeft = false;
-    var dog;
     
     function create() {
         // add sprites and turn on the arcade physics engine for this sprite.
         bg = game.add.tileSprite(0, 0, 30000, 400, 'sky');
+        game.world.setBounds(0, 0, 30000, 400);
         player = game.add.sprite(15, 15, 'ninja');
         player.scale.setTo(0.2, 0.2);
         game.physics.enable(player, Phaser.Physics.ARCADE );
         game.world.sendToBack(bg);
-        dog = game.add.sprite(29800, 330, 'dog');
-        dog.scale.setTo(0.4, 0.4);
         // add animations
-        var j = 10;
-        var arrayJump = [], arrayRun = [], arraySlide = [];
-        var arrayIdle = [], arrayDie = [];
-        while(j < 40) {
-        		if(j < 20)
-        				arrayDie.push(j);
-        		else if(j < 30)
-        				arrayIdle.push(j);
-        		else
-        				arrayJump.push(j);
-        		j++;
-        }
-        j = 60;
-        while(j < 80) {
-        		if(j < 70)
-        				arrayRun.push(j);
-        		else
-        				arraySlide.push(j);
-        		j++;
-        }  
-        player.animations.add('idle', [0], 20, true);
-        player.animations.add('jump', [1], 20, true);
-        player.animations.add('run', [2], 20, true);
-        player.animations.add('slide', [3], 20, true);
+        player.animations.add('idle', [1, 1, 2, 2, 3, 3], 7, true);
+        player.animations.add('jump', [9, 10, 11, 12, 13, 14, 15, 16, 17], 15, true);
+        player.animations.add('run', [18, 19, 20, 21, 22, 23, 24, 25, 26], 18, true);
+        player.animations.add('slide', [27, 28, 29, 30, 31, 32, 33, 34, 35], 18, true);
         // create world gravity and camera
         game.physics.arcade.gravity.y = 3200;
         game.camera.follow(player);
