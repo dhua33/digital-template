@@ -1,54 +1,88 @@
 window.onload = function() {
-    // You might want to start with a template that uses GameStates:
-    //     https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic
-    
-    // You can copy-and-paste the code from any of the examples at http://examples.phaser.io here.
-    // You will need to change the fourth parameter to "new Phaser.Game()" from
-    // 'phaser-example' to 'game', which is the id of the HTML element where we
-    // want the game to go.
-    // The assets (and code) can be found at: https://github.com/photonstorm/phaser/tree/master/examples/assets
-    // You will need to change the paths you pass to "game.load.image()" or any other
-    // loading functions to reflect where you are putting the assets.
-    // All loading functions will typically all be found inside "preload()".
     
     "use strict";
     
-    var game = new Phaser.Game( 800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game( 800, 400, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
-        // Load an image and call it 'logo'.
-        game.load.spritesheet( 'ninja', 'assets/ninja.png', 500, 500);
+        // load sprites and backgrounds
+        game.load.image('sky', 'assets/sky.bmp');
+        game.load.spritesheet( 'ninja', 'assets/ninja.png', 386, 467);
+        game.load.image('map', 'assets/map.bmp');
     }
-    
-    var bouncy;
+    // create variables
+    var bg;
+    var player;
+    var keys;
+    var jump;
+    var jumpTimer = 0;
+    var facingLeft = false;
     
     function create() {
-        // Create a sprite at the center of the screen using the 'logo' image.
-        // bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'logo' );
-        // Anchor the sprite at its center, as opposed to its top-left corner.
-        // so it will be truly centered.
-        //bouncy.anchor.setTo( 0.5, 0.5 );
-        
-        // Turn on the arcade physics engine for this sprite.
-        var player = game.add.sprite(15, 15, 'ninja');
-        player.scale.setTo(0.23, 0.23);
+        // add sprites and turn on the arcade physics engine for this sprite.
+        bg = game.add.tileSprite(0, 0, 30000, 400, 'sky');
+        game.world.setBounds(0, 0, 30000, 400);
+        player = game.add.sprite(15, 15, 'ninja');
+        player.scale.setTo(0.2, 0.2);
         game.physics.enable(player, Phaser.Physics.ARCADE );
-        // Make it bounce off of the world bounds.
-        //bouncy.body.collideWorldBounds = true;
+        game.world.sendToBack(bg);
+        // add animations
+        player.animations.add('idle', [1, 1, 2, 2, 3, 3], 7, true);
+        player.animations.add('jump', [9, 10, 11, 12, 13, 14, 15, 16, 17], 15, true);
+        player.animations.add('run', [18, 19, 20, 21, 22, 23, 24, 25, 26], 18, true);
+        player.animations.add('slide', [27, 28, 29, 30, 31, 32, 33, 34, 35], 18, true);
+        // create world gravity and camera
+        game.physics.arcade.gravity.y = 3200;
+        game.camera.follow(player);
+        // set world bounds and key inputs
+        player.body.collideWorldBounds = true;
+        keys = game.input.keyboard.createCursorKeys();
+        jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         
-        // Add some text using a CSS style.
-        // Center it in X, and position its top 15 pixels from the top of the world.
-        var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "", style );
-        text.anchor.setTo( 0.5, 0.0 );
+    		player.anchor.setTo(.5, .5);
     }
     
     function update() {
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-        //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
+    if (!player.body.onFloor()) { // if the player is not on the ground
+    		player.animations.play('jump');
+    }
+    else if (keys.left.isDown)
+    {
+    		if(!facingLeft) { // if the player is not facing left 
+    				player.scale.x *= -1; // flip the sprite
+    				facingLeft = true;
+    		}
+    		if (player.body.velocity.x > -1000)
+    				player.body.velocity.x += -20;
+        player.animations.play('run');
+    }
+    else if (keys.right.isDown)
+    {
+    		if(facingLeft) {
+    				player.scale.x *= -1;
+    				facingLeft = false;
+    		}
+    		if (player.body.velocity.x < 1000)
+    				player.body.velocity.x += 20;
+        player.animations.play('run');
+    }
+    else if (keys.down.isDown && player.body.velocity.x != 0) { // sliding physics
+    		if(player.body.velocity.x > 0)
+    				player.body.velocity.x -= 10;
+    		else
+    				player.body.velocity.x += 10
+    		player.animations.play('slide');
+    }
+    else
+    {
+        player.body.velocity.x = 0;
+        player.animations.play('idle');
+    }
+    
+    if (jump.isDown && player.body.onFloor() && game.time.now > jumpTimer)
+    {
+        player.body.velocity.y = -1000;
+        jumpTimer = game.time.now + 500;
+    }
     }
 };
