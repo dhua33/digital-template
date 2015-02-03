@@ -16,7 +16,6 @@ window.onload = function() {
     var game = new Phaser.Game( 800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
-        // Load an image and call it 'logo'.
         game.load.spritesheet( 'ninja', 'assets/ninja.png', 500, 500);
     }
     
