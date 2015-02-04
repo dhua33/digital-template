@@ -8,7 +8,7 @@ window.onload = function() {
         // load sprites and backgrounds
         game.load.image('sky', 'assets/sky.bmp');
         game.load.spritesheet( 'ninja', 'assets/ninja.png', 489, 489);
-        game.load.image('dog', 'assets/dog.png');
+        game.load.image('dog', 'assets/Dog.png');
         game.load.image('menu', 'assets/menu.png');
         game.load.image('back', 'assets/background.png');
         game.load.image('spike', 'assets/spike.png');
