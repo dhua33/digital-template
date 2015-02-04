@@ -32,8 +32,9 @@ window.onload = function() {
     var balls;
     var ball;
     var collidePlat;
-    var collideBall;
+    var collideBall = false;
     var collideSpike;
+    var dead = false;
     var text;
     var style;
     var style2;
@@ -65,35 +66,65 @@ window.onload = function() {
         plat.scale.setTo(2, 1);
         plat.body.immovable = true;
         
-        // base platforms
-        while (i < 29000) {
+        // base platforms, balls, spikes
+        var j = 300;
+        var k = 800;
+        var n;
+        while (i < 29000) { // platform set 2
         		plat = platforms.create(i, 1200, 'platform');
         		plat.scale.setTo(10, .5);
         		plat.body.immovable = true;
+        		ball = balls.create(i + j, 1050, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + k, 1070, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + k + 70, 1070, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		n = j;
+        		j = k;
+        		k = n;
         		i += 3000;	
-        } i = 0;
-        while (i < 30000) {
+        } i = 0, j = 600, k = 1200;
+        while (i < 30000) { // platform set 1
         		plat = platforms.create(i, 1400, 'platform');
         		plat.scale.setTo(16, .5);
         		plat.body.immovable = true;
-        		i += 4500
-        } i = 3900;
-        while (i < 27600) {
+        		spike = spikes.create(i + k, 1336, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + j, 1336, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + j + 80, 1336, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		n = j;
+        		j = k;
+        		k = n;
+        		i += 4500;
+        } i = 3900, j = 600, k = 1100;
+        while (i < 27600) { // platform set 3
         		plat = platforms.create(i, 1000, 'platform');
         		plat.scale.setTo(16, .5);
         		plat.body.immovable = true;
-        		i += 3100
+        		ball = balls.create(i + j, 850, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		i += 3100;
         } i = 3250;
         // staircase up
-        var j = 0;
+        j = 0;
         while (i > 0) {
         		plat = platforms.create(i, 800 - j, 'platform');
         		plat.scale.setTo(2, .7);
         		plat.body.immovable = true;
         		i -= 600;
         		j += 50;
-        } i = 700;
-        // large plats
+        } i = 700, j = 0, k = 0;
+        // large plats, balls, and spikes
         while (i < 28950) {
         		plat = platforms.create(i, 350, 'platform');
         		plat.scale.setTo(32, .5);
@@ -158,7 +189,12 @@ window.onload = function() {
     function update() {
     // collision
     		collidePlat = game.physics.arcade.collide(player, platforms);
+    		collideSpike = game.physics.arcade.overlap(player, spikes);
     		win = game.physics.arcade.collide(player, dog);
+    		if(collidePlat && keys.down.isDown && !(keys.left.isDown || keys.right.isDown) && player.body.velocity.x != 0)
+    				collideBall = false;
+    		else
+    				collideBall = game.physics.arcade.overlap(player, balls);
     // win
     if(win){
     		text.setStyle(style2);
@@ -166,7 +202,8 @@ window.onload = function() {
     		game.paused = true;
     }
     // death state
-    if(player.body.onFloor()) {
+    if(player.body.onFloor() || collideSpike || collideBall || dead) {
+    		dead = true;
         player.body.velocity.x = 0;
         back.stopScroll();
         bg.stopScroll();
@@ -184,7 +221,7 @@ window.onload = function() {
     				facingLeft = true;
     		}
     		if (player.body.velocity.x > -700)
-    				player.body.velocity.x += -20;
+    				player.body.velocity.x += -50;
         player.animations.play('run');
         back.autoScroll(5, 0);
         bg.autoScroll(150, 0);
@@ -196,7 +233,7 @@ window.onload = function() {
     				facingLeft = false;
     		}
     		if (player.body.velocity.x < 700)
-    				player.body.velocity.x += 20;
+    				player.body.velocity.x += 50;
         player.animations.play('run');
         back.autoScroll(-5, 0); 
         bg.autoScroll(-150, 0);
@@ -223,6 +260,7 @@ window.onload = function() {
     }
     // reset
     if(!player.alive && keys.up.isDown) {
+    		dead = false;
     		player.reset(15, 700);
     		text.setText("");
     }
