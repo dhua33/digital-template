@@ -69,7 +69,7 @@ window.onload = function() {
         // base platforms, balls, spikes
         var j = 300;
         var k = 800;
-        var n;
+        var n, m;
         while (i < 29000) { // platform set 2
         		plat = platforms.create(i, 1200, 'platform');
         		plat.scale.setTo(10, .5);
@@ -80,7 +80,7 @@ window.onload = function() {
         		ball = balls.create(i + k, 1070, 'ball');
         		ball.scale.setTo(.5, .5);
         		ball.body.immovable = true;
-        		ball = balls.create(i + k + 70, 1070, 'ball');
+        		ball = balls.create(i + k + 50, 1070, 'ball');
         		ball.scale.setTo(.5, .5);
         		ball.body.immovable = true;
         		n = j;
@@ -110,10 +110,51 @@ window.onload = function() {
         		plat = platforms.create(i, 1000, 'platform');
         		plat.scale.setTo(16, .5);
         		plat.body.immovable = true;
+        		i += 3100;
+        } i = 3900, j = 600, k = 1100, m = 1600;
+        while (i < 27600) { // platform set 3 rotation 1 (2 balls, 1 spike)
         		ball = balls.create(i + j, 850, 'ball');
         		ball.scale.setTo(.7, .7);
         		ball.body.immovable = true;
-        		i += 3100;
+        		ball = balls.create(i + j+10, 800, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j+10, 750, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		ball = balls.create(i + m, 870, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		n = j;
+        		j = k;
+        		k = m;
+        		m = n;
+        		i += 6200;
+        } i = 7000, j = 600, k = 1100, m = 1600;
+        while (i < 27600) { // platform set 3 rotation 2 (1 ball, 2 spikes)
+        		ball = balls.create(i + j, 850, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + m + 20, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		n = m;
+        		m = k;
+        		k = j;
+        		j = n;
+        		i += 6200;
         } i = 3250;
         // staircase up
         j = 0;
@@ -130,8 +171,59 @@ window.onload = function() {
         		plat.scale.setTo(32, .5);
         		plat.body.immovable = true;
         		i += 5650
+        } // top platform rotation 1 (mirrors plat 3 rotation 2)
+        i = 700, j = 1200, k = 2200, m = 3200;
+        while (i < 28950) {
+        		ball = balls.create(i + j, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j+70, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + m, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + m+80, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		n = m;
+        		m = k;
+        		k = j;
+        		j = n;
+        		i += 11300;
+        } // top platform rotation 2 (2 balls, 1 spike)
+        i = 6800, j = 1200, k = 2200, m = 3200;
+        while (i < 28950) {
+        		ball = balls.create(i + j, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j, 136, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 120, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		ball = balls.create(i + m, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		n = k;
+        		k = m;
+        		m = j;
+        		j = n;
+        		i += 11300;
         }
-        
         // add animations
         j = 10;
         var arrayJump = [], arrayRun = [], arraySlide = [], arrayIdle = [], arrayDie = [];
