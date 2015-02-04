@@ -44,7 +44,7 @@ window.onload = function() {
         // add sprites and turn on the arcade physics engine for this sprite.
         bg = game.add.tileSprite(0, 0, 30000, 1600, 'sky');
         back = game.add.tileSprite(0, 0, 30000, 1600, 'back');
-        player = game.add.sprite(15, 600, 'ninja');
+        player = game.add.sprite(29800, 600, 'ninja');
         player.scale.setTo(0.2, 0.2);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(player);
