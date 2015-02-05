@@ -14,6 +14,14 @@ window.onload = function() {
         game.load.image('spike', 'assets/spike.png');
         game.load.image('ball', 'assets/ball.png');
         game.load.image('platform', 'assets/platform.png');
+        // music files
+        game.load.audio('titleMusic', 'assets/titleMusic.mp3');
+        game.load.audio('bgMusic', 'assets/bgMusic.mp3');
+        game.load.audio('runSFX', 'assets/runSFX.mp3');
+        game.load.audio('slideSFX', 'assets/slideSFX.mp3');
+        game.load.audio('jumpSFX', 'assets/jumpSFX.mp3');
+        game.load.audio('dieSFX', 'assets/dieSFX.mp3');
+        game.load.audio('winSFX', 'assets/winSFX.mp3');
     }
     // create variables
     var bg;
@@ -40,8 +48,29 @@ window.onload = function() {
     var style2;
     var i = 2000;
     var win;
+    var titleMusic;
+    var bgMusic;
+    var runSFX;
+    var slideSFX;
+    var jumpSFX;
+    var dieSFX;
+    var winSFX;
+    var gameStart = true;
     
     function create() {
+    		// in the beginning to display controls
+        jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        jump.onDown.add(exitMenu, this);
+    		// add sounds and music
+    		titleMusic = game.add.audio('titleMusic', 0.15, true);
+    		bgMusic = game.add.audio('bgMusic', 0.15, true);
+    		runSFX = game.add.audio('runSFX', 0.3);
+    		slideSFX = game.add.audio('slideSFX', 0.03);
+    		jumpSFX = game.add.audio('jumpSFX', 0.5);
+    		dieSFX = game.add.audio('dieSFX');
+    		winSFX = game.add.audio('winSFX');
+    		slideSFX.allowMultiple = true;
+        titleMusic.play();
         // add sprites and turn on the arcade physics engine for this sprite.
         bg = game.add.tileSprite(0, 0, 30000, 1600, 'sky');
         back = game.add.tileSprite(0, 0, 30000, 1600, 'back');
@@ -250,31 +279,28 @@ window.onload = function() {
         player.animations.add('slide', arraySlide, 20, true);
         player.animations.add('die', arrayDie);
         player.anchor.setTo(.5, .5);
-        // create player gravity and camera
-        player.body.gravity.y = 3200;
-        game.camera.follow(player);
         // set world bounds and key inputs
         game.world.setBounds(0, 0, 30000, 1600);
         player.body.collideWorldBounds = true;
-        keys = game.input.keyboard.createCursorKeys();
-        jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         
         // death state text
     		style = { font: "25px Verdana", fill: "#ff0000", align: "center" };
     		style2 = { font: "25px Verdana", fill: "#ffff00", align: "center" };
     		text = game.add.text(200, 200, "", style);
     		text.fixedToCamera = true;
-        
-        // pause the game in the beginning to display controls
-        jump.onDown.add(exitMenu, this);
-        menu = game.add.sprite(100, 0, 'menu');
-        game.paused = true;
+        menu = game.add.sprite(0, 0, 'menu');
+    		
         i = 0;
     }
     function exitMenu() {
-    		if(!win) {
+    		if(gameStart) {
+    				player.body.gravity.y = 3200;
+    				keys = game.input.keyboard.createCursorKeys();
     				menu.destroy();
-    				game.paused = false;
+    				titleMusic.stop();
+    				bgMusic.play();
+    				game.camera.follow(player);
+    				gameStart = false;
     		}
     }
     
@@ -282,7 +308,7 @@ window.onload = function() {
     // collision
     		collidePlat = game.physics.arcade.collide(player, platforms);
     		collideSpike = game.physics.arcade.overlap(player, spikes);
-    		win = game.physics.arcade.collide(player, dog);
+    		win = game.physics.arcade.overlap(player, dog);
     		if(collidePlat && keys.down.isDown && !(keys.left.isDown || keys.right.isDown) && player.body.velocity.x != 0)
     				collideBall = false;
     		else
@@ -291,10 +317,13 @@ window.onload = function() {
     if(win){
     		text.setStyle(style2);
     		text.setText("YOU WIN\nYou've caught Memory.");
-    		game.paused = true;
+    		bgMusic.stop();
+    		winSFX.play('', 0, 0.2, false, false);
     }
     // death state
     if(player.body.onFloor() || collideSpike || collideBall || dead) {
+    		if(!dead)
+    				dieSFX.play('', 0, 0.2, false, false);
     		dead = true;
         player.body.velocity.x = 0;
         back.stopScroll();
@@ -315,6 +344,7 @@ window.onload = function() {
     		if (player.body.velocity.x > -700)
     				player.body.velocity.x += -50;
         player.animations.play('run');
+    		runSFX.play('', 0, 0.15, false, false);
         back.autoScroll(5, 0);
         bg.autoScroll(150, 0);
     }
@@ -327,6 +357,7 @@ window.onload = function() {
     		if (player.body.velocity.x < 700)
     				player.body.velocity.x += 50;
         player.animations.play('run');
+    		runSFX.play('', 0, 0.15, false, false);
         back.autoScroll(-5, 0); 
         bg.autoScroll(-150, 0);
     }
@@ -336,6 +367,7 @@ window.onload = function() {
     		else
     				player.body.velocity.x += 10
     		player.animations.play('slide');
+    		slideSFX.play('', 0.5, 0.04, false, false);
     }
     else
     {
@@ -345,11 +377,13 @@ window.onload = function() {
         player.animations.play('idle');
     }
     // jumping
-    if (jump.isDown && collidePlat && game.time.now > jumpTimer)
+    if (jump.isDown && collidePlat && !dead && game.time.now > jumpTimer)
     {
+    		titleMusic.stop();
+    		jumpSFX.play();
         player.body.velocity.y = -1200;
         jumpTimer = game.time.now + 500;
-    }
+    } 
     // reset
     if(!player.alive && keys.up.isDown) {
     		dead = false;
