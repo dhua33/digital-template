@@ -57,6 +57,8 @@ window.onload = function() {
     var winSFX;
     var gameStart = true;
     var hitbox;
+    var killCount;
+    var counter;
     
     function create() {
     		// in the beginning to display controls
@@ -75,7 +77,7 @@ window.onload = function() {
         // add sprites and turn on the arcade physics engine for this sprite.
         bg = game.add.tileSprite(0, 0, 30000, 1600, 'sky');
         back = game.add.tileSprite(0, 0, 30000, 1600, 'back');
-        player = game.add.sprite(15, 450, 'ninja');
+        player = game.add.sprite(15, 1000, 'ninja');
         player.scale.setTo(0.2, 0.2);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(player);
@@ -101,7 +103,7 @@ window.onload = function() {
         var j = 300;
         var k = 800;
         var n, m;
-        while (i < 29000) { // platform set 2
+        // platform set 2
         		plat = platforms.create(i, 1200, 'platform');
         		plat.scale.setTo(10, .5);
         		plat.body.immovable = true;
@@ -114,11 +116,7 @@ window.onload = function() {
         		ball = balls.create(i + k + 50, 1070, 'ball');
         		ball.scale.setTo(.5, .5);
         		ball.body.immovable = true;
-        		n = j;
-        		j = k;
-        		k = n;
-        		i += 3000;	
-        } i = 0, j = 600, k = 1200;
+        i = 0, j = 600, k = 1200;
         while (i < 30000) { // platform set 1
         		plat = platforms.create(i, 1400, 'platform');
         		plat.scale.setTo(16, .5);
@@ -142,7 +140,7 @@ window.onload = function() {
         		plat.scale.setTo(16, .5);
         		plat.body.immovable = true;
         		i += 3100;
-        } i = 3900, j = 600, k = 1100, m = 1600;
+        } i = 3900, j = 600, k = 1170, m = 1670;
         while (i < 27600) { // platform set 3 rotation 1 (2 balls, 1 spike)
         		ball = balls.create(i + j, 850, 'ball');
         		ball.scale.setTo(.7, .7);
@@ -167,7 +165,7 @@ window.onload = function() {
         		k = m;
         		m = n;
         		i += 6200;
-        } i = 7000, j = 600, k = 1100, m = 1600;
+        } i = 7000, j = 600, k = 1150, m = 1650;
         while (i < 27600) { // platform set 3 rotation 2 (1 ball, 2 spikes)
         		ball = balls.create(i + j, 850, 'ball');
         		ball.scale.setTo(.7, .7);
@@ -193,9 +191,13 @@ window.onload = function() {
         		plat = platforms.create(i, 800 - j, 'platform');
         		plat.scale.setTo(2, .7);
         		plat.body.immovable = true;
-        		i -= 600;
+        		i -= 650;
         		j += 50;
-        } i = 700, j = 0, k = 0;
+        } // extra plat
+        plat = platforms.create(20, 400, 'platform');
+        plat.scale.setTo(2, .7);
+        plat.body.immovable = true;
+        i = 700, j = 0, k = 0;
         // large plats, balls, and spikes
         while (i < 28950) {
         		plat = platforms.create(i, 350, 'platform');
@@ -288,8 +290,12 @@ window.onload = function() {
         // death state text
     		style = { font: "25px Verdana", fill: "#ff0000", align: "center" };
     		style2 = { font: "25px Verdana", fill: "#ffff00", align: "center" };
+    		var style3 = {font: "25px Verdana", fill: "#ffffff", align: "top" };
     		text = game.add.text(200, 200, "", style);
     		text.fixedToCamera = true;
+    		killCount = game.add.text(game.camera.x + 20, game.camera.y + 20, "Retries: 0", style3);
+    		counter = 0;
+    		killCount.fixedToCamera = true;
         menu = game.add.sprite(0, 0, 'menu');
     		
         i = 0;
@@ -391,8 +397,10 @@ window.onload = function() {
     // reset
     if(!player.alive && keys.up.isDown) {
     		dead = false;
-    		player.reset(15, 700);
+    		player.reset(15, 1000);
     		text.setText("");
+    		counter++;
+    		killCount.setText("Retries: " + counter);
     }
     }
 };
