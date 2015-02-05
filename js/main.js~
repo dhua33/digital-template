@@ -7,13 +7,21 @@ window.onload = function() {
     function preload() {
         // load sprites and backgrounds
         game.load.image('sky', 'assets/sky.bmp');
-        game.load.spritesheet( 'ninja', 'assets/ninja.png', 536, 522);
-        game.load.image('dog', 'assets/dog.png');
+        game.load.spritesheet( 'ninja', 'assets/ninja.png', 489, 489);
+        game.load.image('dog', 'assets/Dog.png');
         game.load.image('menu', 'assets/menu.png');
         game.load.image('back', 'assets/background.png');
         game.load.image('spike', 'assets/spike.png');
         game.load.image('ball', 'assets/ball.png');
         game.load.image('platform', 'assets/platform.png');
+        // music files
+        game.load.audio('titleMusic', 'assets/titleMusic.mp3');
+        game.load.audio('bgMusic', 'assets/bgMusic.mp3');
+        game.load.audio('runSFX', 'assets/runSFX.mp3');
+        game.load.audio('slideSFX', 'assets/slideSFX.mp3');
+        game.load.audio('jumpSFX', 'assets/jumpSFX.mp3');
+        game.load.audio('dieSFX', 'assets/dieSFX.mp3');
+        game.load.audio('winSFX', 'assets/winSFX.mp3');
     }
     // create variables
     var bg;
@@ -32,19 +40,41 @@ window.onload = function() {
     var balls;
     var ball;
     var collidePlat;
-    var collideBall;
+    var collideBall = false;
     var collideSpike;
+    var dead = false;
     var text;
     var style;
     var style2;
     var i = 2000;
     var win;
+    var titleMusic;
+    var bgMusic;
+    var runSFX;
+    var slideSFX;
+    var jumpSFX;
+    var dieSFX;
+    var winSFX;
+    var gameStart = true;
     
     function create() {
+    		// in the beginning to display controls
+        jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        jump.onDown.add(exitMenu, this);
+    		// add sounds and music
+    		titleMusic = game.add.audio('titleMusic', 0.15, true);
+    		bgMusic = game.add.audio('bgMusic', 0.15, true);
+    		runSFX = game.add.audio('runSFX', 0.3);
+    		slideSFX = game.add.audio('slideSFX', 0.03);
+    		jumpSFX = game.add.audio('jumpSFX', 0.5);
+    		dieSFX = game.add.audio('dieSFX');
+    		winSFX = game.add.audio('winSFX');
+    		slideSFX.allowMultiple = true;
+        titleMusic.play();
         // add sprites and turn on the arcade physics engine for this sprite.
         bg = game.add.tileSprite(0, 0, 30000, 1600, 'sky');
         back = game.add.tileSprite(0, 0, 30000, 1600, 'back');
-        player = game.add.sprite(15, 600, 'ninja');
+        player = game.add.sprite(15, 450, 'ninja');
         player.scale.setTo(0.2, 0.2);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(player);
@@ -65,42 +95,164 @@ window.onload = function() {
         plat.scale.setTo(2, 1);
         plat.body.immovable = true;
         
-        // base platforms
-        while (i < 29000) {
+        // base platforms, balls, spikes
+        var j = 300;
+        var k = 800;
+        var n, m;
+        while (i < 29000) { // platform set 2
         		plat = platforms.create(i, 1200, 'platform');
         		plat.scale.setTo(10, .5);
         		plat.body.immovable = true;
+        		ball = balls.create(i + j, 1050, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + k, 1070, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + k + 50, 1070, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		n = j;
+        		j = k;
+        		k = n;
         		i += 3000;	
-        } i = 0;
-        while (i < 30000) {
+        } i = 0, j = 600, k = 1200;
+        while (i < 30000) { // platform set 1
         		plat = platforms.create(i, 1400, 'platform');
         		plat.scale.setTo(16, .5);
         		plat.body.immovable = true;
-        		i += 4500
-        } i = 3900;
-        while (i < 27600) {
+        		spike = spikes.create(i + k, 1336, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + j, 1336, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + j + 80, 1336, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		n = j;
+        		j = k;
+        		k = n;
+        		i += 4500;
+        } i = 3900, j = 600, k = 1100;
+        while (i < 27600) { // platform set 3
         		plat = platforms.create(i, 1000, 'platform');
         		plat.scale.setTo(16, .5);
         		plat.body.immovable = true;
-        		i += 3100
+        		i += 3100;
+        } i = 3900, j = 600, k = 1100, m = 1600;
+        while (i < 27600) { // platform set 3 rotation 1 (2 balls, 1 spike)
+        		ball = balls.create(i + j, 850, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j+10, 800, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j+10, 750, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		ball = balls.create(i + m, 870, 'ball');
+        		ball.scale.setTo(.5, .5);
+        		ball.body.immovable = true;
+        		n = j;
+        		j = k;
+        		k = m;
+        		m = n;
+        		i += 6200;
+        } i = 7000, j = 600, k = 1100, m = 1600;
+        while (i < 27600) { // platform set 3 rotation 2 (1 ball, 2 spikes)
+        		ball = balls.create(i + j, 850, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + m + 20, 936, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		n = m;
+        		m = k;
+        		k = j;
+        		j = n;
+        		i += 6200;
         } i = 3250;
         // staircase up
-        var j = 0;
+        j = 0;
         while (i > 0) {
         		plat = platforms.create(i, 800 - j, 'platform');
         		plat.scale.setTo(2, .7);
         		plat.body.immovable = true;
         		i -= 600;
         		j += 50;
-        } i = 700;
-        // large plats
+        } i = 700, j = 0, k = 0;
+        // large plats, balls, and spikes
         while (i < 28950) {
         		plat = platforms.create(i, 350, 'platform');
         		plat.scale.setTo(32, .5);
         		plat.body.immovable = true;
         		i += 5650
+        } // top platform rotation 1 (mirrors plat 3 rotation 2)
+        i = 700, j = 1200, k = 2200, m = 3200;
+        while (i < 28950) {
+        		ball = balls.create(i + j, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j+70, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + m, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + m+80, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		n = m;
+        		m = k;
+        		k = j;
+        		j = n;
+        		i += 11300;
+        } // top platform rotation 2 (2 balls, 1 spike)
+        i = 6800, j = 1200, k = 2200, m = 3200;
+        while (i < 28950) {
+        		ball = balls.create(i + j, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		ball = balls.create(i + j, 136, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		spike = spikes.create(i + k, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 40, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		spike = spikes.create(i + k + 120, 286, 'spike');
+        		spike.scale.setTo(.5, .5);
+        		spike.body.immovable = true;
+        		ball = balls.create(i + m, 200, 'ball');
+        		ball.scale.setTo(.7, .7);
+        		ball.body.immovable = true;
+        		n = k;
+        		k = m;
+        		m = j;
+        		j = n;
+        		i += 11300;
         }
-        
         // add animations
         j = 10;
         var arrayJump = [], arrayRun = [], arraySlide = [], arrayIdle = [], arrayDie = [];
@@ -127,46 +279,52 @@ window.onload = function() {
         player.animations.add('slide', arraySlide, 20, true);
         player.animations.add('die', arrayDie);
         player.anchor.setTo(.5, .5);
-        // create player gravity and camera
-        player.body.gravity.y = 3200;
-        game.camera.follow(player);
         // set world bounds and key inputs
         game.world.setBounds(0, 0, 30000, 1600);
         player.body.collideWorldBounds = true;
-        keys = game.input.keyboard.createCursorKeys();
-        jump = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         
         // death state text
     		style = { font: "25px Verdana", fill: "#ff0000", align: "center" };
     		style2 = { font: "25px Verdana", fill: "#ffff00", align: "center" };
     		text = game.add.text(200, 200, "", style);
     		text.fixedToCamera = true;
-        
-        // pause the game in the beginning to display controls
-        jump.onDown.add(exitMenu, this);
-        menu = game.add.sprite(100, 0, 'menu');
-        game.paused = true;
+        menu = game.add.sprite(0, 0, 'menu');
+    		
         i = 0;
     }
     function exitMenu() {
-    		if(!win) {
+    		if(gameStart) {
+    				player.body.gravity.y = 3200;
+    				keys = game.input.keyboard.createCursorKeys();
     				menu.destroy();
-    				game.paused = false;
+    				titleMusic.stop();
+    				bgMusic.play();
+    				game.camera.follow(player);
+    				gameStart = false;
     		}
     }
     
     function update() {
     // collision
     		collidePlat = game.physics.arcade.collide(player, platforms);
-    		win = game.physics.arcade.collide(player, dog);
+    		collideSpike = game.physics.arcade.overlap(player, spikes);
+    		win = game.physics.arcade.overlap(player, dog);
+    		if(collidePlat && keys.down.isDown && !(keys.left.isDown || keys.right.isDown) && player.body.velocity.x != 0)
+    				collideBall = false;
+    		else
+    				collideBall = game.physics.arcade.overlap(player, balls);
     // win
     if(win){
     		text.setStyle(style2);
     		text.setText("YOU WIN\nYou've caught Memory.");
-    		game.paused = true;
+    		bgMusic.stop();
+    		winSFX.play('', 0, 0.2, false, false);
     }
     // death state
-    if(player.body.onFloor()) {
+    if(player.body.onFloor() || collideSpike || collideBall || dead) {
+    		if(!dead)
+    				dieSFX.play('', 0, 0.2, false, false);
+    		dead = true;
         player.body.velocity.x = 0;
         back.stopScroll();
         bg.stopScroll();
@@ -184,8 +342,9 @@ window.onload = function() {
     				facingLeft = true;
     		}
     		if (player.body.velocity.x > -700)
-    				player.body.velocity.x += -20;
+    				player.body.velocity.x += -50;
         player.animations.play('run');
+    		runSFX.play('', 0, 0.15, false, false);
         back.autoScroll(5, 0);
         bg.autoScroll(150, 0);
     }
@@ -196,8 +355,9 @@ window.onload = function() {
     				facingLeft = false;
     		}
     		if (player.body.velocity.x < 700)
-    				player.body.velocity.x += 20;
+    				player.body.velocity.x += 50;
         player.animations.play('run');
+    		runSFX.play('', 0, 0.15, false, false);
         back.autoScroll(-5, 0); 
         bg.autoScroll(-150, 0);
     }
@@ -207,6 +367,7 @@ window.onload = function() {
     		else
     				player.body.velocity.x += 10
     		player.animations.play('slide');
+    		slideSFX.play('', 0.5, 0.04, false, false);
     }
     else
     {
@@ -216,13 +377,16 @@ window.onload = function() {
         player.animations.play('idle');
     }
     // jumping
-    if (jump.isDown && collidePlat && game.time.now > jumpTimer)
+    if (jump.isDown && collidePlat && !dead && game.time.now > jumpTimer)
     {
+    		titleMusic.stop();
+    		jumpSFX.play();
         player.body.velocity.y = -1200;
         jumpTimer = game.time.now + 500;
-    }
+    } 
     // reset
     if(!player.alive && keys.up.isDown) {
+    		dead = false;
     		player.reset(15, 700);
     		text.setText("");
     }

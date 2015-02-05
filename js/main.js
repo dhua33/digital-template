@@ -56,6 +56,7 @@ window.onload = function() {
     var dieSFX;
     var winSFX;
     var gameStart = true;
+    var hitbox;
     
     function create() {
     		// in the beginning to display controls
@@ -78,6 +79,7 @@ window.onload = function() {
         player.scale.setTo(0.2, 0.2);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(player);
+        hitbox = player.body.width * 0.4;
         game.world.sendToBack(bg);
         dog = game.add.sprite(29800, 1330, 'dog');
         dog.scale.setTo(0.4, 0.4);
@@ -305,6 +307,8 @@ window.onload = function() {
     }
     
     function update() {
+    		// hitbox correction
+    		player.body.width = hitbox;
     // collision
     		collidePlat = game.physics.arcade.collide(player, platforms);
     		collideSpike = game.physics.arcade.overlap(player, spikes);
@@ -381,7 +385,7 @@ window.onload = function() {
     {
     		titleMusic.stop();
     		jumpSFX.play();
-        player.body.velocity.y = -1200;
+        player.body.velocity.y = -1250;
         jumpTimer = game.time.now + 500;
     } 
     // reset
