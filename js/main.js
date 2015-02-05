@@ -59,6 +59,7 @@ window.onload = function() {
     var hitbox;
     var killCount;
     var counter;
+    var playerHeight;
     
     function create() {
     		// in the beginning to display controls
@@ -82,6 +83,7 @@ window.onload = function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(player);
         hitbox = player.body.width * 0.1;
+        playerHeight = player.body.height * 0.95;
         game.world.sendToBack(bg);
         dog = game.add.sprite(29800, 1330, 'dog');
         dog.scale.setTo(0.4, 0.4);
@@ -314,6 +316,7 @@ window.onload = function() {
     function update() {
     		// hitbox correction
     		player.body.width = hitbox;
+    		player.body.height = playerHeight;
     // collision
     		collidePlat = game.physics.arcade.collide(player, platforms);
     		collideSpike = game.physics.arcade.overlap(player, spikes);
