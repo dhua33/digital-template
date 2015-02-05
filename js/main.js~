@@ -283,10 +283,9 @@ window.onload = function() {
         player.animations.add('slide', arraySlide, 20, true);
         player.animations.add('die', arrayDie);
         player.anchor.setTo(.5, .5);
-        // set world bounds and key inputs
+        // set world bounds
         game.world.setBounds(0, 0, 30000, 1600);
         player.body.collideWorldBounds = true;
-        
         // death state text
     		style = { font: "25px Verdana", fill: "#ff0000", align: "center" };
     		style2 = { font: "25px Verdana", fill: "#ffff00", align: "center" };

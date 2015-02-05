@@ -81,7 +81,7 @@ window.onload = function() {
         player.scale.setTo(0.2, 0.2);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(player);
-        hitbox = player.body.width * 0.4;
+        hitbox = player.body.width * 0.1;
         game.world.sendToBack(bg);
         dog = game.add.sprite(29800, 1330, 'dog');
         dog.scale.setTo(0.4, 0.4);
@@ -137,7 +137,7 @@ window.onload = function() {
         } i = 3900, j = 600, k = 1100;
         while (i < 27600) { // platform set 3
         		plat = platforms.create(i, 1000, 'platform');
-        		plat.scale.setTo(16, .5);
+        		plat.scale.setTo(16.5, .5);
         		plat.body.immovable = true;
         		i += 3100;
         } i = 3900, j = 600, k = 1170, m = 1670;
@@ -201,7 +201,7 @@ window.onload = function() {
         // large plats, balls, and spikes
         while (i < 28950) {
         		plat = platforms.create(i, 350, 'platform');
-        		plat.scale.setTo(32, .5);
+        		plat.scale.setTo(32.5, .5);
         		plat.body.immovable = true;
         		i += 5650
         } // top platform rotation 1 (mirrors plat 3 rotation 2)
@@ -335,6 +335,7 @@ window.onload = function() {
     				dieSFX.play('', 0, 0.2, false, false);
     		dead = true;
         player.body.velocity.x = 0;
+        player.body.velocity.y = 0;
         back.stopScroll();
         bg.stopScroll();
         text.setText("YOU DIED\nPress the up arrow key to restart.");
